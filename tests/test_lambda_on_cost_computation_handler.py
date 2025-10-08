@@ -46,8 +46,12 @@ from lambdas.on_cost_computation_handler import (build_charge_reports_per_cost_c
 @mock_aws
 def test_build_charge_reports_per_cost_center(sample_chunk_monthly_charges_per_account, sample_accounts):
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
 
     day = date(2023, 3, 31)
     mock = Mock()
@@ -61,8 +65,12 @@ def test_build_charge_reports_per_cost_center(sample_chunk_monthly_charges_per_a
 @mock_aws
 def test_build_service_reports_per_cost_center(sample_chunk_monthly_services_per_account, sample_accounts):
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
 
     day = date(2023, 3, 31)
     mock = Mock()
@@ -76,8 +84,12 @@ def test_build_service_reports_per_cost_center(sample_chunk_monthly_services_per
 @mock_aws
 def test_build_usage_reports_per_cost_center(sample_chunk_monthly_usages_per_account, sample_accounts):
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
 
     day = date(2023, 3, 31)
     mock = Mock()
@@ -95,8 +107,12 @@ def test_email_reports():
     path = get_report_path(cost_center='Summary', label='services', day=day, suffix='test')
 
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
 
     s3.put_object(Bucket="my_bucket",
                   Key=path,
@@ -150,6 +166,10 @@ def test_get_report_path():
 @mock_aws
 def test_store_report():
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     store_report(path="path/hello.txt", report="hello world") == '[OK]'

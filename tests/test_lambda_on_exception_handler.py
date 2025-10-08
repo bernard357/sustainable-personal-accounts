@@ -55,8 +55,12 @@ sample_payload = json.dumps(
 def test_handle_exception():
 
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
 
     ssm = boto3.client("ssm")
     ssm.put_parameter(Name='my_endpoints',
@@ -132,8 +136,12 @@ def test_get_report_path():
 @mock_aws
 def test_store_report():
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     store_report(path="path/hello.txt", report="hello world") == '[OK]'
 
 
@@ -145,8 +153,12 @@ def test_store_report():
 def test_handle_attachment_request():
 
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     s3.put_object(Bucket="my_bucket", Key="exceptions/my/test.csv", Body="hello,world\nhello,universe")
 
     with open('fixtures/events/sample_direct_download_request.json') as stream:
@@ -166,8 +178,12 @@ def test_handle_attachment_request():
 def test_download_attachment():
 
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     s3.put_object(Bucket="my_bucket", Key="exceptions/my/test.csv", Body="hello,world\nhello,universe")
 
     sec_fetch_headers = {

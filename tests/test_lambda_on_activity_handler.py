@@ -102,8 +102,12 @@ def test_handle_record_on_unexpected_environment():
 def test_handle_monthly_report(given_a_table_of_activities):
     given_a_table_of_activities()
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     assert handle_monthly_report(day=date(year=2023, month=4, day=20)) == "[OK]"
     response = s3.get_object(Bucket="my_bucket",
                              Key=get_report_path(label="DevOps Tools"))
@@ -122,8 +126,12 @@ def test_handle_monthly_report(given_a_table_of_activities):
 def test_handle_ongoing_report(given_a_table_of_activities):
     given_a_table_of_activities()
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     assert handle_ongoing_report(day=date(year=2023, month=3, day=30)) == "[OK]"
     response = s3.get_object(Bucket="my_bucket",
                              Key=get_report_path(label="DevOps Tools"))

@@ -183,8 +183,12 @@ def test_handle_console_login_event_for_unknown_identity_type():
 def test_handle_report(given_a_table_of_shadows):
     given_a_table_of_shadows()
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket="my_bucket",
-                     CreateBucketConfiguration=dict(LocationConstraint='eu-west-3'))
+    region = s3.meta.region_name
+    create_bucket_config = {
+        "CreateBucketConfiguration": dict(LocationConstraint=region)
+    } if region != "us-east-1" else {}
+
+    s3.create_bucket(Bucket="my_bucket", **create_bucket_config)
     assert handle_report() == "[OK]"
     response = s3.get_object(Bucket="my_bucket",
                              Key=get_report_path())
