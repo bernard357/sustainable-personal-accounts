@@ -117,7 +117,8 @@
         "vendor-insights:ListEntitledSecurityProfiles",
         "waf-regional:*",
         "waf:*",
-        "wafv2:*"
+        "wafv2:*",
+        "bedrock:Invoke*"
       ],
       "Sid": "GRREGIONDENY"
     },
